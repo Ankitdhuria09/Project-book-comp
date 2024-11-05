@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <fstream>
 #include <unordered_set>
-#include <iomanip>  
+#include <iomanip>
 using namespace std;
 
 static vector<string> bookNames = {
@@ -83,7 +83,7 @@ private:
     set<string> excludedWords;
 
     void initializeExcludedWords() {
-        excludedWords = {"A","AN","THE","OF","IN"}; // Consider making this case insensitive
+        excludedWords = {"A","AN","THE","OF","IN"};
     }
 
 public:
@@ -101,11 +101,9 @@ public:
                 string word;
 
                 while (file >> word) {
-                    // Convert to uppercase and remove punctuation
                     transform(word.begin(), word.end(), word.begin(), ::toupper);
                     word.erase(remove_if(word.begin(), word.end(), ::ispunct), word.end());
 
-                    // Exclude common words
                     if (excludedWords.find(word) == excludedWords.end() && !word.empty()) {
                         words.push_back(word);
                     }
@@ -126,7 +124,7 @@ public:
             for (const string& word : words) {
                 counts[word]++;
             }
-            counts["total"] = words.size();  // Total word count
+            counts["total"] = words.size();
             wordCountMap[bookName] = counts;
         }
         cout << "Word counts calculated!" << endl << endl;
@@ -141,7 +139,7 @@ public:
 
             for (const auto& [word, count] : counts) {
                 if (word != "total") {
-                    scores[word] = static_cast<double>(count) / totalWords;  // Normalize frequency
+                    scores[word] = static_cast<double>(count) / totalWords;
                 }
             }
             normalizedScores[bookName] = scores;
@@ -151,21 +149,20 @@ public:
 
     void findTopWords() {
         cout << "Identifying the top words..." << endl;
-        
+
         ofstream outFile("outputFiles/common_words.txt");
-        outFile << "📚 Most Common Words in Each Book 📚\n";
+        outFile << "Most Common Words in Each Book\n";
         outFile << "=================================\n\n";
 
         for (const auto& [bookName, scores] : normalizedScores) {
             vector<pair<string, double>> sortedWords(scores.begin(), scores.end());
 
-            // Sort words based on their normalized scores
             sort(sortedWords.begin(), sortedWords.end(),
                  [](const pair<string, double>& a, const pair<string, double>& b) {
                      return a.second > b.second;
                  });
 
-            outFile << "📖 " << bookName << "\n" << string(80, '-') << "\n";
+            outFile << "Book: " << bookName << "\n" << string(80, '-') << "\n";
             outFile << "Top " << min(100, static_cast<int>(sortedWords.size())) << " most frequent words:\n\n";
 
             for (size_t i = 0; i < min(static_cast<size_t>(100), sortedWords.size()); ++i) {
@@ -187,7 +184,7 @@ public:
             return;
         }
 
-        outFile << "📊 Book Similarity Matrix\n" << string(100, '=') << endl << endl;
+        outFile << "Book Similarity Matrix\n" << string(100, '=') << endl << endl;
 
         vector<string> bookList;
         for (const auto& pair : normalizedScores) {
@@ -199,7 +196,6 @@ public:
                 const string& book1 = bookList[i];
                 const string& book2 = bookList[j];
 
-                // Use unordered_set for faster lookups
                 unordered_set<string> wordsInBook1(normalizedScores[book1].begin(), normalizedScores[book1].end());
                 int matchCount = 0;
 
@@ -209,8 +205,8 @@ public:
                     }
                 }
 
-                double similarity = static_cast<double>(matchCount) / min(100.0, static_cast<double>(wordsInBook1.size())); // Adjust similarity logic
-                outFile << "📚 Book Pair: " << book1 << " and " << book2 
+                double similarity = static_cast<double>(matchCount) / min(100.0, static_cast<double>(wordsInBook1.size()));
+                outFile << "Book Pair: " << book1 << " and " << book2 
                         << " | Similarity: " << fixed << setprecision(4) << similarity << endl;
                 outFile << string(80, '-') << endl;
             }
@@ -227,7 +223,6 @@ public:
         string line;
 
         while (getline(inFile, line)) {
-            // Extracting book pairs and similarity value
             if (line.find("Similarity:") != string::npos) {
                 size_t pos = line.find("and");
                 string bookPair = line.substr(0, pos);
@@ -237,37 +232,30 @@ public:
         }
         inFile.close();
 
-        // Sort similarities
-        sort(similarities.begin(), similarities.end(), [](const auto& a, const auto& b) {
-            return a.second > b.second;
-        });
+        sort(similarities.begin(), similarities.end(),
+             [](const pair<string, double>& a, const pair<string, double>& b) {
+                 return a.second > b.second;
+             });
 
-        // Write results to output file
-        ofstream outFile("outputFiles/similar_books.txt");
-        if (!outFile) {
-            cerr << "Error opening outputFiles/similar_books.txt for writing" << endl;
-            return;
-        }
+        ofstream outFile("outputFiles/top_similar_books.txt");
+        outFile << "Top 10 Similar Books\n";
+        outFile << "=====================\n\n";
 
-        outFile << "Top 10 Most Similar Books:\n";
         for (size_t i = 0; i < min(static_cast<size_t>(10), similarities.size()); ++i) {
-            outFile << (i + 1) << ". " << similarities[i].first 
-                    << " (Similarity: " << fixed << setprecision(4) << similarities[i].second << ")\n";
+            outFile << (i + 1) << ". " << similarities[i].first << " | Similarity: " << fixed << setprecision(4) << similarities[i].second << endl;
         }
         outFile.close();
-        cout << "Top similar books written to outputFiles/similar_books.txt!" << endl;
+        cout << "Top similar books written to outputFiles/top_similar_books.txt" << endl << endl;
     }
 };
 
 int main() {
     BookAnalyzer analyzer;
-
     analyzer.loadBookWords();
     analyzer.countWords();
     analyzer.calculateNormalizedScores();
     analyzer.findTopWords();
     analyzer.compareBooks();
     analyzer.findSimilarBooks();
-
     return 0;
 }
