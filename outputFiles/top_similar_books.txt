@@ -1,0 +1,13 @@
+Top 10 Similar Books
+=====================
+
+1. Book Pair: Gil Blas.txt  | Similarity: 108.4100
+2. Book Pair: Foxes Book of Martyrs Part 2.txt  | Similarity: 104.0000
+3. Book Pair: The Anatomy of Melancholy Part 1.txt  | Similarity: 103.8600
+4. Book Pair: Foxes Book of Martyrs Part 3.txt  | Similarity: 102.1200
+5. Book Pair: Foxes Book of Martyrs Part 1.txt  | Similarity: 99.8300
+6. Book Pair: Foxes Book of Martyrs Part 1.txt  | Similarity: 97.7300
+7. Book Pair: Foxes Book of Martyrs Part 2.txt  | Similarity: 97.4600
+8. Book Pair: The Covent Garden Calendar.txt  | Similarity: 95.5200
+9. Book Pair: The Covent Garden Calendar.txt  | Similarity: 93.9700
+10. Book Pair: Foxes Book of Martyrs Part 3.txt  | Similarity: 93.6500
